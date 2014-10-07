@@ -54,9 +54,14 @@ class Computer < Cmdr::Device
     ip_address :type => :string
     mac_address :type => :string
   end
-  #attempt to turn on the computer via WoL
+  #The following turns the computer on from sleeping (all devices) or off (not Macs)
+  #For Dells: WOL needs to be set to on and deep sleep needs to be turned off
+  #For Macs: change energy saving, dark wake, display, allow WOL, and possibly more
+  #Troubleshooting: An "intrusion alert" will keep a Dell from booting when off
+  #Macs will not turn on the display if only the display is sleeping: the computer
+  #itself must be asleep for it to wake
   command :start, :action => proc{
-    w = Wol::WakeOnLan.new(:address => configuration[:ip_address], :mac => self.mac_address)
+    w = Wol::WakeOnLan.new({:mac => @mac_address})
     w.wake
   }
   
